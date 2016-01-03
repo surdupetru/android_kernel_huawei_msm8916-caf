@@ -15,6 +15,7 @@
 #include "msm8916-qrd.dtsi"
 #include "msm8916-memory.dtsi"
 #include "dsi-panel-innolux-720p-video.dtsi"
+#include "g620s/g620s.dtsi"
 
 / {
 	model = "Qualcomm MSM 8916 QRD G620S-L01";
