@@ -73,7 +73,7 @@ dtb-$(CONFIG_ARCH_MSM8909) += msm8909-sim.dtb \
 	apq8009-mtp-wcd9326.dtb \
 	msm8909-mtp-wcd9326.dtb
 
-dtb-$(CONFIG_ARCH_MSM8916) += g620s.dtb
+dtb-$(CONFIG_ARCH_MSM8916) += huawei-g620s.dtb
 
 dtb-$(CONFIG_ARCH_MSM8226) += msm8226-sim.dtb \
 	msm8226-fluid.dtb \
