@@ -14,7 +14,6 @@
 
 #include "msm8916-qrd.dtsi"
 #include "msm8916-memory.dtsi"
-#include "dsi-panel-innolux-720p-video.dtsi"
 #include "huawei-g620s/huawei-g620s.dtsi"
 
 / {

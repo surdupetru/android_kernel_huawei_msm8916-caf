@@ -13,12 +13,20 @@
         status = "ok";
         qcom,low-voltage-threshold = <3350000>;
         qcom,battery-data = <&qrd_batterydata>;
+        qcom,resume-soc = <97>;
+        qcom,disable-vbatdet-based-recharge;
+        qcom,bpd-detection = "bpd_id";
+        qcom,shutdown-soc-valid-limit = <40>;
+        qcom,force-bms-active-on-charger;
 };
 
 &pm8916_chg {
         status = "okay";
         qcom,vddmax-mv = <4350>;
         qcom,vddsafe-mv = <4380>;
+	qcom,vinmin-mv = <4389>;
+	qcom,batt-hot-percentage = <35>;
+	qcom,batt-cold-percentage = <70>;
         qcom,tchg-mins = <360>;
 };
 
