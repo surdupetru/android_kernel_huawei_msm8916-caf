@@ -356,3 +356,9 @@
 
 	qcom,vdd-current-level = <4000 400000>;
 };
+
+/ {
+	huawei_fac_info {
+		fac,product_name = "G620S-L01";
+	};
+};
