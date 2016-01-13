@@ -13,45 +13,62 @@
  */
 
 #include <linux/fs.h>
-#include <linux/of.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
+#include <linux/list.h>
+#include <linux/export.h>
+#include <misc/app_info.h>
+#include <linux/slab.h>
+#include <soc/qcom/smsm.h>
 
-const void* dt_get_property_for_fac(char* key, int* pvalue_len)
+struct info_node
 {
-    struct device_node *dp = NULL;
+    char name[APP_INFO_NAME_LENTH];
+    char value[APP_INFO_VALUE_LENTH];
+    struct list_head entry;
+};
 
-    if (key == NULL)
+static LIST_HEAD(app_info_list);
+static DEFINE_SPINLOCK(app_info_list_lock);
+
+int app_info_set(const char * name, const char * value)
+{
+    struct info_node *new_node = NULL;
+    int name_lenth = 0;
+    int value_lenth = 0;
+
+    if(WARN_ON(!name || !value))
+        return -1;
+
+    name_lenth = strlen(name);
+    value_lenth = strlen(value);
+
+    new_node = kzalloc(sizeof(*new_node), GFP_KERNEL);
+    if(new_node == NULL)
     {
-        printk(KERN_ERR "param is NULL!\n");
-        return NULL;
+        return -1;
     }
 
-    dp = of_find_node_by_path("/huawei_fac_info");
-    if(!of_device_is_available(dp))
-    {
-        printk(KERN_ERR "device is not available!\n");
-        return NULL;
-    }
+    memcpy(new_node->name,name,((name_lenth > (APP_INFO_NAME_LENTH-1))?(APP_INFO_NAME_LENTH-1):name_lenth));
+    memcpy(new_node->value,value,((value_lenth > (APP_INFO_VALUE_LENTH-1))?(APP_INFO_VALUE_LENTH-1):value_lenth));
 
-   return of_get_property(dp, key, pvalue_len);
+    spin_lock(&app_info_list_lock);
+    list_add_tail(&new_node->entry,&app_info_list);
+    spin_unlock(&app_info_list_lock);
+
+    return 0;
 }
+
+EXPORT_SYMBOL(app_info_set);
 
 static int app_info_proc_show(struct seq_file *m, void *v)
 {
-    int product_name_len = 0;
-    const char* product_name = NULL;
+    struct info_node *node;
 
-    product_name = dt_get_property_for_fac("fac,product_name",&product_name_len);
-
-    if(product_name == NULL)
+    list_for_each_entry(node,&app_info_list,entry)
     {
-        printk(KERN_ERR "get product name fail!\n");
-        return 1;
+        seq_printf(m,"%-32s:%32s\n",node->name,node->value);
     }
-
-    seq_printf(m, "%s\n", product_name);
-
     return 0;
 }
 

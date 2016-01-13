@@ -14,6 +14,7 @@
 #include "g620s-battery.dtsi"
 #include "g620s-lcd.dtsi"
 #include "g620s-nfc.dtsi"
+#include "g620s-fac.dtsi"
 
 &tlmm_pinmux {
 	akm_reset_pin {
