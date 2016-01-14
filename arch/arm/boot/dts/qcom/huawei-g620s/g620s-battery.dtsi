@@ -54,6 +54,10 @@
 		qcom,fast-avg-setup = <0>; //with only one average measurement
 	};
 
+	chan@30 {
+		qcom,scale-function = <11>;
+	};
+
 	chan@36 {
 		qcom,scale-function = <10>;
 	};

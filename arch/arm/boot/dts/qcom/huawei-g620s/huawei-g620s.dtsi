@@ -13,6 +13,7 @@
 
 #include "g620s-battery.dtsi"
 #include "g620s-lcd.dtsi"
+#include "g620s-camera.dtsi"
 #include "g620s-nfc.dtsi"
 #include "g620s-fac.dtsi"
 
@@ -144,7 +145,6 @@
 			};
 		};
 	};
-
 };
 
 &mdss_mdp {
@@ -157,7 +157,7 @@
 };
 
 &mdss_dsi0 {
-	qcom,dsi-pref-prim-pan = <&dsi_boe_hx8394d_5_720p_video>;
+	qcom,dsi-pref-prim-pan = <&dsi_innolux_720p_video>;
 	pinctrl-names = "mdss_default", "mdss_sleep";
 	pinctrl-0 = <&mdss_dsi_active>;
 	pinctrl-1 = <&mdss_dsi_suspend>;
@@ -190,10 +190,12 @@
 	};
 };
 
+&dsi_innolux_720p_video {
+	qcom,cont-splash-enabled;
+	qcom,esd-check-enabled;
+};
+
 &soc {
-	spi_0 {
-		status = "disabled";
-	};
 
 	gpio-leds {
 		compatible = "gpio-leds";
@@ -224,6 +226,7 @@
 			default-state = "off";
 			retain-state-suspended;
 		};
+
 	};
 
 	sound {
@@ -232,17 +235,6 @@
 			qcom,msm-snd-card-id = <0>;
 			qcom,msm-ext-pa = "primary";
 			qcom,msm-codec-type = "internal";
-			qcom,msm-hs-micbias-type = "external";
-			qcom,audio-routing =
-					"RX_BIAS", "MCLK",
-					"SPK_RX_BIAS", "MCLK",
-					"INT_LDO_H", "MCLK",
-					"MIC BIAS External", "Handset Mic",
-					"MIC BIAS External2", "Headset Mic",
-					"MIC BIAS External", "Secondary Mic",
-					"AMIC1", "MIC BIAS External",
-					"AMIC2", "MIC BIAS External2",
-					"AMIC3", "MIC BIAS External";
 			qcom,msm-mbhc-hphl-swh = <1>;
 			qcom,msm-mbhc-gnd-swh = <0>;
 			pinctrl-names = "cdc_lines_act",
@@ -290,7 +282,7 @@
 			reg = <0x70>;
 			interrupt-parent = <&msm_gpio>;
 			interrupts = <13 0x2008>;
-			vdd-supply = <&vdd_vreg>;
+			vdd-supply = <&pm8916_l17>;
 			vcc_i2c-supply = <&pm8916_l16>;
 			/* pins used by touchscreen */
 			pinctrl-names = "pmx_ts_active","pmx_ts_suspend","pmx_ts_suspend";
@@ -320,8 +312,19 @@
 		qcom,disp-maxx = <720>;
 		qcom,disp-maxy = <1280>;
 		qcom,panel-maxx = <720>;
-		qcom,panel-maxy = <1385>;
+		qcom,panel-maxy = <1369>;
 		qcom,key-codes = <158 172 139>;
+	};
+
+	qcom,mdss_dsi@1a98000 {
+		qcom,platform-reset-gpio = <&msm_gpio 25 0>;
+		qcom,platform-te-gpio = <&msm_gpio 24 0>;
+	};
+
+	pinctrl@1000000 {
+		usb-id-pin {
+			qcom,pins = <&gp 117>;
+		};
 	};
 };
 
@@ -359,8 +362,9 @@
 	qcom,vdd-current-level = <4000 400000>;
 };
 
-/ {
-	huawei_fac_info {
-		fac,product_name = "G620S-L01";
-	};
+&mdss_dsi0 {
+	qcom,regulator-ldo-mode;
+	qcom,platform-regulator-settings = [02 09 03 00 20 00 01];
 };
+
+#include "../hw-default-lcd.dtsi"

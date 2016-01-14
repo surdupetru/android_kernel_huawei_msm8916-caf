@@ -14,6 +14,7 @@
 
 #include "msm8916-qrd.dtsi"
 #include "msm8916-memory.dtsi"
+#include "dsi-panel-innolux-720p-video.dtsi"
 #include "huawei-g620s/huawei-g620s.dtsi"
 
 / {
@@ -23,4 +24,21 @@
 			<8102 0>, <8102 4>, <8104 0>, <8104 4>,	<8118 0>, <8118 4>, <8120 0>, <8120 4>,
 			<8134 0>, <8134 4>, <8136 0>, <8136 4>,	<8116 0>, <8116 4>, <8117 0>, <8117 4>,
 			<8103 0>, <8103 4>;
+};
+
+&soc {
+
+	sound {
+		qcom,msm-hs-micbias-type = "external";
+		qcom,audio-routing =
+				"RX_BIAS", "MCLK",
+				"SPK_RX_BIAS", "MCLK",
+				"INT_LDO_H", "MCLK",
+				"MIC BIAS External", "Handset Mic",
+				"MIC BIAS External2", "Headset Mic",
+				"MIC BIAS External", "Secondary Mic",
+				"AMIC1", "MIC BIAS External",
+				"AMIC2", "MIC BIAS External2",
+				"AMIC3", "MIC BIAS External";
+	};
 };
