@@ -18,6 +18,21 @@
 #include "g620s-fac.dtsi"
 
 &tlmm_pinmux {
+
+	kx023_int1_pin {
+		qcom,pins = <&gp 115>;
+		qcom,num-grp-pins = <1>;
+		label = "kx023_int_pin";
+		kx023_int1_default: int1_default {
+			  drive-strength = <6>;
+			  bias-pull-dowm;
+		};
+		kx023_int1_sleep: int1_sleep {
+			drive-strength = <2>;
+			bias-pull-down;
+		};
+	};
+
 	akm_reset_pin {
 		qcom,pins = <&gp 36>;
 		qcom,pin-func = <0>;
@@ -144,6 +159,25 @@
 				ti,en-gpio = <&msm_gpio 32 0>;
 			};
 		};
+	};
+
+	Rohm@1e {
+		compatible = "kionix,kx023";
+		reg = <0x1e>;
+		pinctrl-names = "kx023_default","kx023_sleep";
+		pinctrl-0 = <&kx023_int1_default>;
+		pinctrl-1 = <&kx023_int1_sleep>;
+		vdd-supply = <&pm8916_l17>;
+		vddio-supply = <&pm8916_l6>;
+		gs,int1_gpio = <&msm_gpio 115 0x2002>;
+		/*1 is bottom and others means top*/
+		gs,direct = <1>;
+		gs,min_interval = <5>;
+		gs,poll_interval = <200>;
+		gs,accel_direction = <1>;
+		gs,accel_irq_use_drdy = <0>;
+		gs,accel_g_range = <0>;
+		gs,accel_res = <0>;
 	};
 };
 

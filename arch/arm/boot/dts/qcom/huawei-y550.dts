@@ -9,19 +9,19 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- */
+ */ 
 /dts-v1/;
 
 #include "msm8916-qrd.dtsi"
 #include "msm8916-memory.dtsi"
 #include "dsi-panel-innolux-720p-video.dtsi"
-#include "huawei-y635/huawei-y635.dtsi"
+#include "huawei-y550/huawei-y550.dtsi"
 
 / {
 	model = "Qualcomm MSM 8916 QRD Y635-L01";
 	compatible = "qcom,msm8916-qrd-skuh", "qcom,msm8916-qrd", "qcom,msm8916", "qcom,qrd";
-	qcom,board-id = <8003 0x0> , <8003 0x4>, <8051 0x0> , <8051 0x4>, <8083 0x0> , <8083 0x4>,
-			<8067 0x0> , <8067 0x4>, <8099 0x0> , <8099 0x4>;
+	qcom,board-id = <8000 0> , <8000 4> , <8001 0> , <8001 4> , <8096 0> , <8096 4> , <8016 0> , <8016 4> ,
+			<8017 0> , <8017 4> , <8112 0> , <8112 4> , <8032 0> , <8032 4> , <8033 0> , <8033 4> , <8128 0> , <8128 4>;
 };
 
 &pm8916_bms {

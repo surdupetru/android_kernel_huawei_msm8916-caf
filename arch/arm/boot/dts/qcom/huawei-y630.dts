@@ -1,0 +1,40 @@
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2016, @surdu_petru
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/dts-v1/;
+
+#include "msm8916-qrd-skuh.dtsi"
+#include "msm8916-memory.dtsi"
+#include "huawei-y630/huawei-y630.dtsi"
+/ {
+	model = "Qualcomm MSM 8916 QRD Y630";
+	compatible = "qcom,msm8916-qrd-skuh", "qcom,msm8916-qrd", "qcom,msm8916", "qcom,qrd";
+	qcom,board-id = <8019 0x100> , <8019 0x104> , <8035 0x100> , <8035 0x104> , <8003 0> , <8003 4> , <8051 0x100> , <8051 0x104>;
+};
+
+&soc {
+
+	sound {
+		qcom,msm-hs-micbias-type = "external";
+		qcom,audio-routing =
+				"RX_BIAS", "MCLK",
+				"SPK_RX_BIAS", "MCLK",
+				"INT_LDO_H", "MCLK",
+				"MIC BIAS External", "Handset Mic",
+				"MIC BIAS External2", "Headset Mic",
+				"MIC BIAS External", "Secondary Mic",
+				"AMIC1", "MIC BIAS External",
+				"AMIC2", "MIC BIAS External2",
+				"AMIC3", "MIC BIAS External";
+	};
+
+};

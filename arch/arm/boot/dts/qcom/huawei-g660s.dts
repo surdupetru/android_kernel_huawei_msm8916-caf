@@ -22,3 +22,29 @@
 	compatible = "qcom,msm8916-qrd-skuh", "qcom,msm8916-qrd", "qcom,msm8916", "qcom,qrd";
 	qcom,board-id =	<8086 0>, <8086 4>, <8054 0>, <8054 4>, <8070 0>, <8070 4>;
 };
+
+&pm8916_bms {
+	qcom,shutdown-soc-valid-limit = <40>;
+	qcom,low-voltage-threshold = <3350000>;
+	qcom,resume-soc = <97>;
+	qcom,disable-vbatdet-based-recharge;
+	qcom,bpd-detection = "bpd_id";
+	qcom,force-bms-active-on-charger;
+};
+
+&soc {
+
+	sound {
+		qcom,msm-hs-micbias-type = "external";
+		qcom,audio-routing =
+				"RX_BIAS", "MCLK",
+				"SPK_RX_BIAS", "MCLK",
+				"INT_LDO_H", "MCLK",
+				"MIC BIAS External", "Handset Mic",
+				"MIC BIAS External2", "Headset Mic",
+				"MIC BIAS External", "Secondary Mic",
+				"AMIC1", "MIC BIAS External",
+				"AMIC2", "MIC BIAS External2",
+				"AMIC3", "MIC BIAS External";
+	};
+};

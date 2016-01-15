@@ -11,11 +11,11 @@
  * GNU General Public License for more details.
  */
 
-#include "y635-battery.dtsi"
-#include "y635-lcd.dtsi"
-#include "y635-camera.dtsi"
-#include "y635-nfc.dtsi"
-#include "y635-fac.dtsi"
+#include "y630-battery.dtsi"
+#include "y630-lcd.dtsi"
+#include "y630-camera.dtsi"
+#include "y630-nfc.dtsi"
+#include "y630-fac.dtsi"
 
 &tlmm_pinmux {
 
@@ -196,9 +196,6 @@
 	pinctrl-0 = <&mdss_dsi_active>;
 	pinctrl-1 = <&mdss_dsi_suspend>;
 
-	qcom,regulator-ldo-mode;
-	qcom,platform-regulator-settings = [02 09 03 00 20 00 01];
-
 	qcom,platform-reset-gpio = <&msm_gpio 25 0>;
 
 	vsp-supply = <&tps65132_pos>;
@@ -319,7 +316,7 @@
 			reg = <0x70>;
 			interrupt-parent = <&msm_gpio>;
 			interrupts = <13 0x2008>;
-			vdd-supply = <&vdd_vreg &pm8916_l17>;
+			vdd-supply = <&pm8916_l17>;
 			vcc_i2c-supply = <&pm8916_l16>;
 			/* pins used by touchscreen */
 			pinctrl-names = "pmx_ts_active","pmx_ts_suspend","pmx_ts_suspend";
@@ -397,6 +394,11 @@
 	qcom,vdd-lpm-sup;
 
 	qcom,vdd-current-level = <4000 400000>;
+};
+
+&mdss_dsi0 {
+	qcom,regulator-ldo-mode;
+	qcom,platform-regulator-settings = [02 09 03 00 20 00 01];
 };
 
 #include "../hw-default-lcd.dtsi"
