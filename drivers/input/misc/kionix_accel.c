@@ -16,29 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include	<linux/err.h>
-#include	<linux/errno.h>
-#include	<linux/delay.h>
-#include	<linux/fs.h>
-#include	<linux/kernel.h>
-#include	<linux/i2c.h>
-#include	<linux/input.h>
-#include	<linux/uaccess.h>
-#include	<linux/interrupt.h>
-#include	<linux/workqueue.h>
-#include	<linux/module.h>
-#include	<linux/irq.h>
-#include	<linux/gpio.h>
-#include	<linux/slab.h>
-#include	<linux/version.h>
-#include	<linux/proc_fs.h>
-#include	<linux/regulator/consumer.h>
-#include	<linux/of_gpio.h>
-#include	<linux/sensors.h>
+#include <linux/err.h>
+#include <linux/errno.h>
+#include <linux/delay.h>
+#include <linux/fs.h>
+#include <linux/kernel.h>
+#include <linux/i2c.h>
+#include <linux/input.h>
+#include <linux/uaccess.h>
+#include <linux/interrupt.h>
+#include <linux/workqueue.h>
+#include <linux/module.h>
+#include <linux/irq.h>
+#include <linux/gpio.h>
+#include <linux/slab.h>
+#include <linux/version.h>
+#include <linux/proc_fs.h>
+#include <linux/regulator/consumer.h>
+#include <linux/of_gpio.h>
+#include <linux/sensors.h>
+
 #ifdef	CONFIG_HAS_EARLYSUSPEND
 #include	<linux/earlysuspend.h>
 #endif /* CONFIG_HAS_EARLYSUSPEND */
-#include	"kionix_accel.h"
+
+#include "kionix_accel.h"
+#include <misc/app_info.h>
 /*move so many Macro definitions and structs to kionix_accel.h*/
 
 int kx023_debug_mask = 1;
@@ -385,7 +388,9 @@ static void kionix_accel_report_accel_data(struct kionix_accel_driver *acceld)
 	}; } accel_data;
 	s16 x, y, z;
 	int err;
-		/*delete it , use short code segment */
+	ktime_t timestamp;
+
+	timestamp = ktime_get_boottime();
 
 	/* Only read the output registers if enabled */
 	if(atomic_read(&acceld->accel_enabled) > 0) {
@@ -397,6 +402,7 @@ static void kionix_accel_report_accel_data(struct kionix_accel_driver *acceld)
 			}
 			else {
 				write_lock(&acceld->rwlock_accel_data);
+
 				x = ((s16) le16_to_cpu(accel_data.accel_data_s16[acceld->axis_map_x])) >> acceld->shift;
 				y = ((s16) le16_to_cpu(accel_data.accel_data_s16[acceld->axis_map_y])) >> acceld->shift;
 				z = ((s16) le16_to_cpu(accel_data.accel_data_s16[acceld->axis_map_z])) >> acceld->shift;
@@ -423,12 +429,15 @@ static void kionix_accel_report_accel_data(struct kionix_accel_driver *acceld)
 					acceld->accel_data[acceld->axis_map_z]++;
 					dataflag |= 0x04;
 				}
+
 				KIONIX_DBG( "%s: report x data = %d", __func__, acceld->accel_data[acceld->axis_map_x]);
 				KIONIX_DBG( "%s: report y data = %d", __func__, acceld->accel_data[acceld->axis_map_y]);
 				KIONIX_DBG( "%s: report z data = %d", __func__, acceld->accel_data[acceld->axis_map_z]);
 				input_report_abs(acceld->input_dev, ABS_X, acceld->accel_data[acceld->axis_map_x]);
 				input_report_abs(acceld->input_dev, ABS_Y, acceld->accel_data[acceld->axis_map_y]);
 				input_report_abs(acceld->input_dev, ABS_Z, acceld->accel_data[acceld->axis_map_z]);
+				input_event(acceld->input_dev, EV_SYN, SYN_TIME_SEC, ktime_to_timespec(timestamp).tv_sec);
+				input_event(acceld->input_dev, EV_SYN, SYN_TIME_NSEC, ktime_to_timespec(timestamp).tv_nsec);
 				input_sync(acceld->input_dev);
 				if(acceld->print_xyz_flag)
 				{
@@ -1459,7 +1468,6 @@ static int  kionix_accel_init_workfunc(struct kionix_accel_driver *acceld)
 	return 0;
 }
 
-
 static int  kionix_accel_probe(struct i2c_client *client,
 				 const struct i2c_device_id *id)
 {
@@ -1580,6 +1588,12 @@ static int  kionix_accel_probe(struct i2c_client *client,
 	if (err) {
 		KIONIX_ERR("%s: kionix_accel_power_on_init returned err = %d. Abort.", __func__, err);
 		goto err_free_sensor_class;
+	}
+
+	err = app_info_set("G-Sensor", "ROHM KX023");
+	if (err < 0)/*failed to add app_info*/
+	{
+		KIONIX_ERR("%s %d:failed to add app_info\n", __func__, __LINE__);
 	}
 
 	if (!IS_ERR_OR_NULL(acceld->pinctrl)) {
