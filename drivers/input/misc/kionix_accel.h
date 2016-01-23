@@ -19,18 +19,16 @@
 
 #ifndef __KIONIX_ACCEL_H__
 #define __KIONIX_ACCEL_H__
+
 #include	<linux/kernel.h>
 #include	<linux/i2c.h>
 #include	<linux/input.h>
-#ifdef CONFIG_HUAWEI_DSM 
-#include 	<linux/dsm_pub.h>
-#endif
 #include	<linux/sensors.h>
 
 #define MAX_REPORT_TIMES                  3000
 #define KIONIX_ACCEL_I2C_ADDR		0x0F
 #define KIONIX_ACCEL_NAME			"kionix_accel"
-#define KIONIX_ACCEL_INPUT_NAME		"accelerometer"
+#define KIONIX_ACCEL_INPUT_NAME			"accelerometer"
 #define KIONIX_ACCEL_IRQ			"kionix-irq"
 
 /* set print debug info interval 10s*/
@@ -41,14 +39,7 @@
 #define EXCEPTION_BASE_TIMES		24
 #define	KIONIX_I2C_SCL	909
 #define	KIONIX_I2C_SDA	908
- #ifdef CONFIG_HUAWEI_DSM  
-/* for example: base=1g, x_y_z_max = 3g*/
-#define base_to_total_max(base) 		(3*base)
-/* for example: base=1g, base_to_total_min = 0.6g*/
-#define base_to_total_min(base) 		(3*base/5)
-/* for example: base=1g, single_axis_max = 1.8g*/
-#define base_to_single_axis_max(base) 	(9*base/5)
-#endif 
+
 #define KIONIX_ERR(x,arg...) do {\
 		printk("[kx023_err]"  x"\n",##arg);\
 	} while (0)
@@ -73,42 +64,7 @@ enum {
 
 struct kionix_accel_platform_data;
 struct kionix_accel_driver;
-#ifdef CONFIG_HUAWEI_DSM
 
-struct kx_gs_dsm_operation{
-	int 	(*dump_i2c_status)(struct kionix_accel_driver *acceld,int i2c_err);
-	int 	(*check_exception)(int *xyz, struct kionix_accel_driver *acceld);
-	void (*judge_same_value_excep)(s16 x,s16 y,s16 z,struct kionix_accel_driver *acceld);
-};
-
-struct gsensor_test_excep{
-	int total_times;
-	int exception_times;
-	int i2c_scl_val;			/* when i2c transfer err, read the gpio value*/
-	int i2c_sda_val;
-	int vdd_mv;
-	int vddio_mv;
-	int i2c_err_num;			/*i2c transfer err number*/
-	int excep_num;				/* the error number the dsm_client identified*/
-	unsigned char reg_buf[4]; 	/* 0: ACCEL_INT_REL,		1:ACCEL_CTRL_REG1
-								 2: ACCEL_DATA_CTRL ,	3:ACCEL_INT_CTRL1 */
-	bool triger_timer_flag;		/*Allow to trigger the timer to judge exception or not */
-	bool triger_count_flag;		/*Allow to trigger counting the exception and total times */
-	int excep_base; 			/* exception base value to calculate x_y_z_max and single_axis_max */
-	int x_y_z_max;				/*exception of	(x+y+z) max value*/
-	int x_y_z_min;				/*exception of	(|x|+|y|+|z|) min value*/
-	int single_axis_max;		/* single axis max value*/
-	int cur_err_x;
-	int cur_err_y;
-	int cur_err_z;
-	s16	pre_xyz[3];
-	int same_times;
-	int x_same_times;
-	int y_same_times;
-	int z_same_times;
-	int error_times;
-};
-#endif
 struct sensor_regulator {
 	struct regulator *vreg;
 	const char *name;
@@ -135,14 +91,6 @@ struct kionix_accel_driver {
 	struct sensor_regulator kionix_acc_vreg[2];
 	struct delayed_work debug_work;
 	bool	queued_debug_work_flag;
-#ifdef CONFIG_HUAWEI_DSM
-	struct kx_gs_dsm_operation kx023_dsm_operation;
-	struct timer_list gsensor_excep_timer;
-	struct gsensor_test_excep gsensor_test_exception;
-	struct work_struct	excep_dwork;
-	char *dsm_buf;			/* buf to record error or exception */
-	struct dsm_client *gsensor_dclient;
-#endif
 	
 	bool device_exist;
 
@@ -187,12 +135,6 @@ struct kionix_accel_driver {
 	int (*kionix_accel_standby)(struct kionix_accel_driver *acceld);
 	int (*i2c_read)(struct kionix_accel_driver *acceld, u8 addr, u8 *buf,int len);
 };
-
-#ifdef CONFIG_HUAWEI_DSM
-int register_kx023_dsm_operations(struct kionix_accel_driver *acceld);
-void unregister_kx023_dsm_operations(struct kionix_accel_driver *acceld);
-#endif
-
 
 struct kionix_accel_platform_data {
 	/* Although the accelerometer can perform at high ODR,
