@@ -21,7 +21,11 @@ obj-$(CONFIG_INPUT_KEYBOARD)	+= keyboard/
 obj-$(CONFIG_INPUT_MOUSE)	+= mouse/
 obj-$(CONFIG_INPUT_JOYSTICK)	+= joystick/
 obj-$(CONFIG_INPUT_TABLET)	+= tablet/
+ifdef CONFIG_HUAWEI_TOUCH
+obj-$(CONFIG_INPUT_TOUCHSCREEN)	+= touchscreen_huawei/
+else
 obj-$(CONFIG_INPUT_TOUCHSCREEN)	+= touchscreen/
+endif
 obj-$(CONFIG_INPUT_MISC)	+= misc/
 
 obj-$(CONFIG_INPUT_APMPOWER)	+= apm-power.o

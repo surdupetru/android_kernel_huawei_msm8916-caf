@@ -200,6 +200,13 @@ config SENSORS_HALL
 	 Say y here if you want to use this hall sensor driver, it
 	 is like a switch. For example, lid.
 
+config HUAWEI_TOUCH
+	bool "Huawei touchscreen"
+	depends on INPUT
+	default n
+	---help---
+	 Say y here if you want to use Huawei touchscreen driver.
+
 comment "Input Device Drivers"
 
 source "drivers/input/keyboard/Kconfig"
@@ -210,7 +217,17 @@ source "drivers/input/joystick/Kconfig"
 
 source "drivers/input/tablet/Kconfig"
 
+if HUAWEI_TOUCH
+
+source "drivers/input/touchscreen_huawei/Kconfig"
+
+endif
+
+if !HUAWEI_TOUCH
+
 source "drivers/input/touchscreen/Kconfig"
+
+endif
 
 source "drivers/input/misc/Kconfig"
 
